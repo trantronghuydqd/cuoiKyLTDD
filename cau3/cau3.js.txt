@@ -159,9 +159,13 @@ const ProductDetails = ({ route, navigation }) => {
       <Text style = {{fontSize: 24}}> {item.name}</Text>
       <Text style = {{fontSize: 18}}> {item.des}</Text>
 
-      <Text style = {{fontSize: 24}}> {item.price}</Text>
 
-    <TouchableOpacity style = {{borderWidth: 1, padding: 10}} onPress = {() => handleAddToCart(item)}><Text>Add to cart</Text></TouchableOpacity>
+      <View style= {{flexDirection: "row", justifyContent: "space-between", padding: 10}} >
+      
+        <Text style = {{fontSize: 24}}> ${item.price}</Text>
+        <TouchableOpacity style = {{borderWidth: 1, padding: 10}}><Text>Add to cart</Text></TouchableOpacity>
+    
+      </View>
     
     </View>
   );
@@ -184,7 +188,6 @@ export default function App() {
     </ProductContext.Provider>
   );
 }
-
 
 const styles = StyleSheet.create({
   
