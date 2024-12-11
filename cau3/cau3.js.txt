@@ -37,6 +37,8 @@ const ProductContext = createContext()
 
 const mapImage = (nameImage) => {
   switch (nameImage){
+    case "Soft Element": return require('./assets/product1.png')
+    case "LesetGalant": return require('./assets/product2.png')
     case "product1": return require('./assets/product1.png')
     case "product2": return require('./assets/product2.png')
     case "product3": return require('./assets/product3.png')
