@@ -1,4 +1,4 @@
-// tt
+//lll1
 import React, { createContext, useReducer, useContext, useEffect, useState } from 'react';
 import { View, FlatList, StyleSheet, Text, TouchableOpacity, Image, TextInput, ImageBackground } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -6,70 +6,63 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import axios from 'axios';
 
-// 1. Init State
+// init state
 const initState = {
-  
-};
+  products: [],
+  cart: []
+}
 
-// 2 Action Creators
+// action
+const fetchProductsSS = payload => ({type: "FETCH_PRODUCTS", payload})
 
 
 
-// 3. Reducer
+// reducer
 const productReducer = (state, action) => {
-  
-};
+  switch (action.type){
+    case "FETCH_PRODUCTS": 
+      return {...state, products: action.payload}
+    
+  }
+}
+// api
 
-
-// 4 api
+const fetchProducts = (dispatch) => {
+  axios.get("https://671bdbea2c842d92c381892a.mockapi.io/PRODUCTS").then(res => dispatch(fetchProductsSS(res.data)))
+}
 
 
 const lorem = "biểu tượng trái tim màu trắng. Biểu tượng trên thẻ chơi cho trái tim. Thay thế phong cách cho từ tình yêu";
-const Stack = createStackNavigator();
-const ProductContext = createContext();
 
+const Stack = createStackNavigator()
+const ProductContext = createContext()
+
+const mapImage = (nameImage) => {
+  switch (nameImage){
+    case "product1": return require('./assets/product1.png')
+    case "product2": return require('./assets/product2.png')
+    case "product3": return require('./assets/product3.png')
+    case "product4": return require('./assets/product4.png')
+    case "product5": return require('./assets/product5.png')
+    case "product6": return require('./assets/product6.png')
+  }
+}
 
 const HomeScreen = ({ navigation }) => {
   return (
     <ImageBackground source = {require('./assets/background.jpg')}>
-        <View>
-          <Text>Renovate Your interrior</Text>
-          <TouchableOpacity onPress = {() => navigation.navigate("Products")}><Text>Go to catalog</Text></TouchableOpacity>
-        </View>
-        <View>
-        <Text>Popular products</Text>
-        <Text>View all</Text>
-        </View>
+    <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
+      <Text style = {{fontSize: 24, fontWeight: "bold", color: "black"}}>Renovate your interrior</Text>
+      <Image source = {mapImage('product1')} style = {{width: 200, height: 200, margin: 50}}></Image>
+      <TouchableOpacity onPress = {() => navigation.navigate('Products')} style = {{ backgroundColor: "black", borderRadius: 50, padding: 20}}><Text style = {{color: "white"}}>Go to catalog</Text></TouchableOpacity>
+    </View>
+    
     </ImageBackground>
   )
 }
 
-const Products = ({ navigation }) => {
-  const renderItem = ({ item }) => (
-    <TouchableOpacity>
-    
-    </TouchableOpacity>
-  );
-
-  return (
-    <View>
-      
-    </View>
-  );
-};
 
 
-
-
-
-const ProductDetails = ({ route, navigation }) => {
-
-  return (
-    <View>
-      
-    </View>
-  );
-};
 
 
 
@@ -80,15 +73,15 @@ export default function App() {
     <ProductContext.Provider value={{ state, dispatch }}> {/* Provide value directly */}
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen name="HomeScreen" component={HomeScreen} />
-          <Stack.Screen name="Products" component={Products} />
-          <Stack.Screen name="ProductDetails" component={ProductDetails} />
+          <Stack.Screen name="HomeSrceen" component={HomeScreen} />
+          
         </Stack.Navigator>
       </NavigationContainer>
     </ProductContext.Provider>
   );
 }
+// ... (styles)
 
 const styles = StyleSheet.create({
-
+  
 });
