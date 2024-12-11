@@ -1,0 +1,191 @@
+//lll1
+import React, { createContext, useReducer, useContext, useEffect, useState } from 'react';
+import { View, FlatList, StyleSheet, Text, TouchableOpacity, Image, TextInput, ImageBackground } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import axios from 'axios';
+
+// init state
+const initState = {
+  products: [],
+  cart: []
+}
+
+// action
+const fetchProductsSS = payload => ({type: "FETCH_PRODUCTS", payload})
+
+
+
+// reducer
+const productReducer = (state, action) => {
+  switch (action.type){
+    case "FETCH_PRODUCTS": 
+      return {...state, products: action.payload}
+  }
+}
+// api
+
+const fetchProducts = (dispatch) => {
+  axios.get("https://671bdbea2c842d92c381892a.mockapi.io/PRODUCTS").then(res => dispatch(fetchProductsSS(res.data)))
+}
+
+
+
+const Stack = createStackNavigator()
+const ProductContext = createContext()
+
+const mapImage = (nameImage) => {
+  switch (nameImage){
+    case "product1": return require('./assets/product1.png')
+    case "product2": return require('./assets/product2.png')
+    case "product3": return require('./assets/product3.png')
+    case "product4": return require('./assets/product4.png')
+    case "product5": return require('./assets/product5.png')
+    case "product6": return require('./assets/product6.png')
+  }
+}
+
+
+const HomeScreen = ({ navigation }) => {
+  return (
+    <ImageBackground source = {require('./assets/background.jpg')}  >
+    <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
+      <Text style = {{fontSize: 24, fontWeight: "bold", color: "black"}}>Renovate your interrior</Text>
+      <TouchableOpacity onPress = {() => navigation.navigate('Products')} style = {{ backgroundColor: "black", borderRadius: 50, padding: 20}}><Text style = {{color: "white"}}>Go to catalog</Text></TouchableOpacity>
+    </View>
+    <View><Image source = {mapImage('product1')} style = {{width: 200, height: 200, margin: 50}}></Image></View>
+    </ImageBackground>
+  )
+}
+
+const Products = ({ navigation }) => {
+  const {state, dispatch} = useContext(ProductContext)
+  const {products} = state
+  const [cateSelec, setCateSelec] = useState("All")
+
+
+  useEffect(() => {
+    fetchProducts(dispatch)
+  },[])
+
+  const cates = ["All", ...new Set(products.map(pro => pro.category))]
+
+  const filterCateSelec = products.filter(pro => {
+    if (cateSelec === "All") return true;
+    return (pro.category === cateSelec)
+  })
+
+
+
+  const renderItem = ({ item }) => (
+    <TouchableOpacity onPress = {()=> navigation.navigate('ProductDetails', {item})} style ={{flex: 1, backgroundColor: "white", padding: 20, margin: 5, alignItems: "center"}}>
+     
+      <Image source = {mapImage(item.name)} style = {{width: 100, height: 100}}></Image>
+       <Text>{item.name}</Text>
+      <Text>${item.price}</Text>
+      
+    </TouchableOpacity>
+  );
+
+  return (
+    <View style={{flex: 1}}>
+    
+      <View style= {{flexDirection: "row", justifyContent: "space-between", padding: 10}}>
+        <Image source = {require('./assets/search.png')} style = {{width: 20, height: 20}}></Image>
+        <View style= {{flexDirection: "row", justifyContent: "space-between"}}><Image source = {require('./assets/profile.png')} style = {{width: 20, height: 20}}></Image>
+        <Image source = {require('./assets/star.png')} style = {{width: 20, height: 20}}></Image></View>
+
+      </View>
+
+      
+      <View style= {{flexDirection: "row", justifyContent: "space-between", padding: 10}}>
+      <Text style = {{fontSize: 24, fontWeight: "Bold"}}>Discover product</Text>
+      <Image source = {require('./assets/heart.png')} style = {{width: 20, height: 20}}></Image>
+      </View>
+
+      
+      <View style = {{flexDirection: "row"}}>
+      {cates.map(cate => (
+        <TouchableOpacity onPress = {() => setCateSelec(cate)} style = {{borderWidth: 1, paddingHorizontal: 10, borderRadius: 50, marginHorizontal: 5}}><Text>{cate}</Text></TouchableOpacity>
+      ))}
+       
+      </View>
+
+       <FlatList data = {filterCateSelec} renderItem = {renderItem} numColumns = {2} keyExtractor = {item => item.id}></FlatList>
+       
+
+       <View style = {{flexDirection: "row", justifyContent: "space-evenly"}}>
+       <View><Image source= {require('./assets/home.png')} style = {{width: 20, height: 20}}></Image><Text>Home</Text></View>
+        <View><Image source= {require('./assets/search.png')} style = {{width: 20, height: 20}}></Image><Text>Search</Text></View>
+         <View><Image source= {require('./assets/heart.png')} style = {{width: 20, height: 20}}></Image><Text>Favorite</Text></View>
+          <View><Image source= {require('./assets/profile.png')} style = {{width: 20, height: 20}}></Image><Text>Profile</Text></View>
+       </View>
+    </View>
+  );
+};
+
+
+
+
+const ProductDetails = ({ route, navigation }) => {
+
+  const {dispatch } = useContext(ProductContext)
+  const {item} = route.params
+  const handleAddToCart = (product) => {
+    dispatch(addToCart(product))
+    navigation.navigate("CartScreen")
+  }
+
+
+  return (
+    <View style={{flex: 1}} >
+
+    <View style= {{flexDirection: "row", justifyContent: "space-between", padding: 10}}>
+        <Image source = {require('./assets/search.png')} style = {{width: 20, height: 20}}></Image>
+        <Image source = {require('./assets/heart.png')} style = {{width: 20, height: 20}}></Image>
+        
+
+      </View>
+    
+    <Image style = {{width: 400, height: 400}} source = {mapImage(item.name)}></Image>
+
+    <View style = {{flexDirection: "row"}}>
+      <Text style = {{fontSize: 24}}><Image source={require('./assets/star.png')} style = {{width: 20, height: 20}}></Image>{item.start}</Text>
+      <Text  style = {{marginLeft: 20 ,fontSize: 24}}> {item.reviews} Reivew</Text>
+    </View  >
+
+
+      <Text style = {{fontSize: 24}}> {item.name}</Text>
+      <Text style = {{fontSize: 18}}> {item.des}</Text>
+
+      <Text style = {{fontSize: 24}}> {item.price}</Text>
+
+    <TouchableOpacity style = {{borderWidth: 1, padding: 10}} onPress = {() => handleAddToCart(item)}><Text>Add to cart</Text></TouchableOpacity>
+    
+    </View>
+  );
+};
+
+
+
+export default function App() {
+  const [state, dispatch] = useReducer(productReducer, initState); // Using useReducer here
+
+  return (
+    <ProductContext.Provider value={{ state, dispatch }}> {/* Provide value directly */}
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="HomeSrceen" component={HomeScreen} />
+          <Stack.Screen name="Products" component={Products} />
+          <Stack.Screen name="ProductDetails" component={ProductDetails} /> 
+        </Stack.Navigator>
+      </NavigationContainer>
+    </ProductContext.Provider>
+  );
+}
+
+
+const styles = StyleSheet.create({
+  
+});
